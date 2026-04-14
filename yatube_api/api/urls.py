@@ -7,7 +7,8 @@ from . import views
 router = DefaultRouter()
 router.register(r'posts', views.PostViewSet, basename='posts')
 router.register(r'groups', views.GroupViewSet, basename='groups')
-router.register(r'posts/(?P<post_id>\d+)/comments', views.CommentViewSet, basename='comments')
+router.register(r'posts/(?P<post_id>\d+)/comments',
+                views.CommentViewSet, basename='comments')
 
 urlpatterns = [
     path('v1/api-token-auth/', token_views.obtain_auth_token),
