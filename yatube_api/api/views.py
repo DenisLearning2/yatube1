@@ -21,7 +21,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
- 
+
     @action(detail=True, methods=['get', 'post'])
     def comments(self, request, pk=None):
         post = self.get_object()
