@@ -1,6 +1,8 @@
 from rest_framework import viewsets, permissions
 from django.shortcuts import get_object_or_404
-
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework import status
 from posts.models import Post, Group
 from .serializers import PostSerializer, GroupSerializer, CommentSerializer
 
@@ -19,6 +21,22 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+        
+    @action(detail=True, methods=['get', 'post'])
+    def comments(self, request, pk=None):
+        post = self.get_object()
+        if request.method == 'POST':
+            serializer = CommentSerializer(
+                data=request.data,
+                context={'request': request}
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save(author=request.user, post=post)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        comments = post.comments.all()
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data)
 
 
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
